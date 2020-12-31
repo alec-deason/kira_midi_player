@@ -7,6 +7,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-kira = { git = "https://github.com/tesselode/kira.git" }
+kira = { git = "https://github.com/tesselode/kira.git", branch="main" }
 midly = "0.5.1"
 regex = "1.4.2"
