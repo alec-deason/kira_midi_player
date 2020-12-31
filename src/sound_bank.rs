@@ -5,12 +5,12 @@ use std::{
 use regex::Regex;
 
 use kira::{
-    sound::SoundId,
+    sound::SoundHandle,
     manager::AudioManager,
 };
 
 pub struct SoundBank {
-    samples: HashMap<u32, SoundId>,
+    samples: HashMap<u32, SoundHandle>,
 }
 
 impl SoundBank {
@@ -61,7 +61,7 @@ impl SoundBank {
         Self { samples: samples.into_iter().collect() }
     }
 
-    pub fn sound_id_for_note(&self, note: u32) -> Option<SoundId> {
+    pub fn sound_id_for_note(&self, note: u32) -> Option<SoundHandle> {
         self.samples.get(&note).cloned()
     }
 }
