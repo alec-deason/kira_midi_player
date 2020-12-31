@@ -9,6 +9,23 @@ use kira::{
     manager::AudioManager,
 };
 
+pub struct Instruments {
+    pub channels: HashMap<u32, SoundBank>,
+    pub default: Option<u32>,
+}
+
+impl Instruments {
+    pub fn sound_bank_for_channel(&self, channel: u32) -> Option<&SoundBank> {
+        if let Some(bank) = self.channels.get(&channel) {
+            Some(bank)
+        } else if let Some(default_channel) = self.default {
+            self.channels.get(&default_channel)
+        } else {
+            None
+        }
+    }
+}
+
 pub struct SoundBank {
     samples: HashMap<u32, SoundHandle>,
 }
