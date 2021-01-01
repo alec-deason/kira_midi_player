@@ -36,41 +36,51 @@ impl SoundBank {
         for entry in std::fs::read_dir(path.as_ref()).unwrap() {
             let entry = entry.unwrap();
             if let Some(captures) = pattern.captures(entry.path().to_str().unwrap()) {
-                let note = match captures
-                    .name("note")
-                    .unwrap()
-                    .as_str()
-                    .to_uppercase()
-                    .as_str()
-                {
-                    "C" => 0,
-                    "CS" => 1,
-                    "C#" => 1,
-                    "D" => 2,
-                    "DS" => 3,
-                    "D#" => 3,
-                    "E" => 4,
-                    "F" => 5,
-                    "FS" => 6,
-                    "F#" => 6,
-                    "G" => 7,
-                    "GS" => 8,
-                    "G#" => 8,
-                    "A" => 9,
-                    "AS" => 10,
-                    "A#" => 10,
-                    "B" => 11,
-                    _ => panic!(),
+                let note = if let Some(note) = captures.name("note") {
+                     let note = match note
+                        .as_str()
+                        .to_uppercase()
+                        .as_str()
+                    {
+                        "C" => 0,
+                        "CS" => 1,
+                        "C#" => 1,
+                        "DB" => 1,
+                        "D" => 2,
+                        "DS" => 3,
+                        "D#" => 3,
+                        "EB" => 3,
+                        "E" => 4,
+                        "F" => 5,
+                        "FS" => 6,
+                        "F#" => 6,
+                        "GB" => 6,
+                        "G" => 7,
+                        "GS" => 8,
+                        "G#" => 8,
+                        "AB" => 8,
+                        "A" => 9,
+                        "AS" => 10,
+                        "A#" => 10,
+                        "BB" => 10,
+                        "B" => 11,
+                        _ => panic!(),
+                    };
+                    let octave = captures
+                        .name("octave")
+                        .unwrap()
+                        .as_str()
+                        .parse::<u32>()
+                        .unwrap();
+                    note + (octave + 1) * 12
+                } else if let Some(midi_note) = captures.name("midi_note") {
+                    midi_note.as_str().parse::<u32>().unwrap()
+                } else {
+                    panic!("Must supply either a standard notation note or a midi note number");
                 };
-                let octave = captures
-                    .name("octave")
-                    .unwrap()
-                    .as_str()
-                    .parse::<u32>()
-                    .unwrap();
-                let adjusted_note = note + (octave + 1) * 12;
+
                 samples.push((
-                    adjusted_note,
+                    note,
                     audio_manager.load_sound(entry.path(), Default::default()).unwrap(),
                 ));
             }

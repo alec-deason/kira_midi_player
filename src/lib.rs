@@ -1,3 +1,4 @@
+#![feature(binary_heap_into_iter_sorted)]
 use std::collections::BinaryHeap;
 use kira::{
     sequence::Sequence,
@@ -45,14 +46,15 @@ pub fn sequence_from_midi(midi: &Smf, instruments: &sound_bank::Instruments, tra
     }
     sequence.start_loop();
     let mut time = 0;
-    for EventAtTime(event_time, event) in events {
+    for EventAtTime(event_time, event) in events.into_iter_sorted() {
         let delta = event_time - time;
+        assert!(delta >= 0);
         time = event_time;
+        if delta != 0 {
+            sequence.wait(Duration::Beats(delta as f64 / ticks_per_beat as f64));
+        }
         match event.kind {
             TrackEventKind::Midi { channel, message } => {
-                if delta > 0 {
-                    sequence.wait_for_interval(delta as f64 / ticks_per_beat as f64);
-                }
                 match message {
                     MidiMessage::NoteOn { key, vel } => {
                         if let Some(sound_bank) = instruments.sound_bank_for_channel(channel.as_int() as u32) {
@@ -68,7 +70,8 @@ pub fn sequence_from_midi(midi: &Smf, instruments: &sound_bank::Instruments, tra
                         if let Some(sound_bank) = instruments.sound_bank_for_channel(channel.as_int() as u32) {
                             let key = key.as_int() as i32 + transpose;
                             if let Some(sound_id) = sound_bank.sound_id_for_note(key as u32) {
-                                sequence.stop_instances_of(sound_id, Default::default());
+                                //TODO: I need actual decay before this really works
+                                //sequence.stop_instances_of(sound_id, Default::default());
                             }
                         }
                     }
