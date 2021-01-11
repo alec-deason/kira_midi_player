@@ -59,8 +59,8 @@ pub fn sequence_from_midi(midi: &Smf, instruments: &sound_bank::Instruments, tra
                     MidiMessage::NoteOn { key, vel } => {
                         if let Some(sound_bank) = instruments.sound_bank_for_channel(channel.as_int() as u32) {
                             let key = key.as_int() as i32 + transpose;
-                            if let Some(sound_id) = sound_bank.sound_id_for_note(key as u32) {
-                                sequence.play(sound_id, Default::default());
+                            if let Some(sound_handle) = sound_bank.sound_id_for_note(key as u32) {
+                                sequence.play(sound_handle.id(), Default::default());
                             } else {
                                 println!("woops: {}", key);
                             }
