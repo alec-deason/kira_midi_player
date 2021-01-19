@@ -5,7 +5,7 @@ use std::{
 use regex::Regex;
 
 use kira::{
-    sound::SoundHandle,
+    sound::handle::SoundHandle,
     manager::AudioManager,
 };
 
